@@ -1,30 +1,58 @@
 
 // IMPORTS
-// import express
-import express from 'express';
-// import auth controllers (logic behind auth)
+// Import express
+import { Router } from 'express';
+// Import auth controllers (logic behind auth)
 import { login, register } from '../controllers/auth.controller.js';
-// import express validator
+// Import express validator
 import { body } from 'express-validator';
-// import own validation result
+// Import own validation result
 import { validationResultExpress } from '../moddlewares/validationResultExpress.js';
 
-// create reouter
-const router = express.Router();
+// Create reouter
+const router = Router();
 
-// setting router for login
+// Setting router for login
 router.post('/login', [
-  // check email
-  body('email', 'Incorrect email format')
+
+  // Check email
+  body('email', 'Invalid email format')
     .trim() // remove sides spaces
     .isEmail(), // check email format
-  // check password
-  body('password')
-    .isLength({ min: 6 }) // check has at leat 6 characters
+
+  // Check password
+  body('password', 'Invalid password')
+    .isAlphanumeric() // has letters
+    .isLength({ min: 6 }) // has at least 6 characters
+
 ], validationResultExpress, login);
 
-// settings router for register
-router.post('/register', validationResultExpress, register)
+// Settings router for register
+router.post('/register',[
 
-// exporting router
+  // Check name
+  body('name', 'Invalid name')
+    .trim() // remove sides spaces
+    .isAlphanumeric() // has letters
+    .isLength({min: 2}), // has at least 3 characters
+
+  // Check surname
+  body('surname', 'Invalid surname')
+    .trim() // remove sides spaces
+    .isAlphanumeric() // check has letters
+    .isLength({min: 2}), // has at least 3 characters
+
+  // Check email
+  body('email', 'Invalid email format')
+    .trim() // remove sides spaces
+    .isEmail(), // check email format
+
+  // Check password
+  body('password', 'Invalid password')
+    .isAlphanumeric() // has letters
+    .isLength({ min: 6 }) // has at least 6 characters
+
+], validationResultExpress, register)
+
+// Exporting router
 export default router;

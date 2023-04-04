@@ -1,27 +1,26 @@
 
 // IMPORTS
 // Enviroment variables
-import 'dotenv/config'
+import 'dotenv/config';
 // Express
 import express from 'express';
 // MongoDB Database
-import './database/connectdb.js'
+import './database/connectdb.js';
+
 // ROUTERS
 import authRouter from './routes/auth.route.js'
 
-// setting port
+// Setting port
 const PORT = process.env.PORT || 3000;
 
-// setting express app
+// Setting express app
 const app = express();
 
-// enable json
-app.use(express.json())
+// Enable json
+app.use(express.json());
 
-// setting the auth route (/api/login, /api/register)
-app.use('/api/', authRouter)
+// Setting the auth route (/api/auth/login, /api/auth/register)
+app.use('/api/auth', authRouter)
 
-// open listen port
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-})
+// Open listen port
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
