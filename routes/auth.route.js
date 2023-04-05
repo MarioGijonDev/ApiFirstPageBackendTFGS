@@ -3,11 +3,12 @@
 // Import express
 import { Router } from 'express';
 // Import auth controllers (logic behind auth)
-import { login, register } from '../controllers/auth.controller.js';
+import { login, register, infoUser } from '../controllers/auth.controller.js';
 // Import express validator
 import { body } from 'express-validator';
 // Import own validation result
-import { validationResultExpress } from '../moddlewares/validationResultExpress.js';
+import { validationResultExpress } from '../middlewares/validationResultExpress.js';
+import { requireToken } from '../middlewares/requireToken.js';
 
 // Create reouter
 const router = Router();
@@ -53,6 +54,9 @@ router.post('/register',[
     .isLength({ min: 6 }) // has at least 6 characters
 
 ], validationResultExpress, register)
+
+// Route for check protection with jwt
+router.get('/protected', requireToken, infoUser)
 
 // Exporting router
 export default router;

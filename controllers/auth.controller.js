@@ -4,6 +4,8 @@
 import { User } from '../models/User.js'
 // Import json web token
 import jwt from 'jsonwebtoken'
+// Import generateToken
+import { generateToken } from '../utils/generateToken.js';
 
 // Register for register auth
 export const register = async (req, res) => {
@@ -46,7 +48,7 @@ export const login = async (req, res) => {
 
     // If not existes, reply a json with the message
     if(!user)
-      return res.status(403).json({ error: 'User does not exists' })
+      return res.status(403).json({ error: 'User does not exists' });
 
     // Check if password matches with database
     const passwordResponse = await user.comparePassword(password);
@@ -56,10 +58,10 @@ export const login = async (req, res) => {
       return res.status(403).json({ error: 'Incorrect credentials' });
 
     // Generate jwt
-    const token = jwt.sign({uid: user.id}, process.env.JWT_SECRET);
+    const { token, expiresIn } = generateToken(user.id);
 
     // Return message with action
-    return res.status(200).json({action: 'Login', request: req.body, jwt: token}); 
+    return res.status(200).json({action: 'Login', request: req.body, jwt: { token, expiresIn }}); 
 
   }catch(e){
 
@@ -67,4 +69,25 @@ export const login = async (req, res) => {
     return res.status(500).json({ error: 'Something went wrong in server' })
 
   }
+}
+
+// Function that find the user by id
+// Return json with name, surname and email of the user
+export const infoUser = async (req, res) =>{ 
+
+  try{
+
+    // Find user by id, using lean for get simplicity data
+    const {name, surname, email} = await User.findById(req.uid).lean();
+
+    // Return the data in a json
+    return res.json({ name, surname, email })
+
+  }catch(e){
+
+    // Return error
+    console.log(e)
+
+  }
+
 }

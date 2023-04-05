@@ -19,8 +19,11 @@ const app = express();
 // Enable json
 app.use(express.json());
 
+// Static means that the directory will be accessible
+app.use(express.static('public'))
+
 // Setting the auth route (/api/auth/login, /api/auth/register)
-app.use('/api/auth', authRouter)
+app.use('/api/v1/auth', authRouter)
 
 // Open listen port
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))

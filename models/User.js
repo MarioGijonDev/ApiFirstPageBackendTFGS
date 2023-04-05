@@ -40,7 +40,7 @@ const userSchema = new Schema({
   }
 });
 
-// Hash the password
+// function for Hash the password
 // Mandatory a function instead of an arrow function, cause we need the variable this
 userSchema.pre("save", async function(next){
 
