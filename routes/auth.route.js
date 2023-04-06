@@ -3,60 +3,30 @@
 // Import express
 import { Router } from 'express';
 // Import auth controllers (logic behind auth)
-import { login, register, infoUser } from '../controllers/auth.controller.js';
-// Import express validator
-import { body } from 'express-validator';
-// Import own validation result
-import { validationResultExpress } from '../middlewares/validationResultExpress.js';
+import { login, register, infoUser , refreshToken, logout} from '../controllers/auth.controller.js';
+// Import middleware requireToken
 import { requireToken } from '../middlewares/requireToken.js';
+// Import middleware requireRefreshToken
+import { requireRefreshToken } from '../middlewares/requireRefreshToken.js';
+// Import validator middlewares
+import { bodyLoginValidator, bodyRegisterValidator } from '../middlewares/validatorManager.js';
 
 // Create reouter
 const router = Router();
 
 // Setting router for login
-router.post('/login', [
-
-  // Check email
-  body('email', 'Invalid email format')
-    .trim() // remove sides spaces
-    .isEmail(), // check email format
-
-  // Check password
-  body('password', 'Invalid password')
-    .isAlphanumeric() // has letters
-    .isLength({ min: 6 }) // has at least 6 characters
-
-], validationResultExpress, login);
+router.post('/login', bodyLoginValidator, login);
 
 // Settings router for register
-router.post('/register',[
-
-  // Check name
-  body('name', 'Invalid name')
-    .trim() // remove sides spaces
-    .isAlphanumeric() // has letters
-    .isLength({min: 2}), // has at least 3 characters
-
-  // Check surname
-  body('surname', 'Invalid surname')
-    .trim() // remove sides spaces
-    .isAlphanumeric() // check has letters
-    .isLength({min: 2}), // has at least 3 characters
-
-  // Check email
-  body('email', 'Invalid email format')
-    .trim() // remove sides spaces
-    .isEmail(), // check email format
-
-  // Check password
-  body('password', 'Invalid password')
-    .isAlphanumeric() // has letters
-    .isLength({ min: 6 }) // has at least 6 characters
-
-], validationResultExpress, register)
+router.post('/register', bodyRegisterValidator, register)
 
 // Route for check protection with jwt
 router.get('/protected', requireToken, infoUser)
+
+// Route for generate refresh token
+router.get('/refresh', requireRefreshToken, refreshToken)
+
+router.get('/logout', logout)
 
 // Exporting router
 export default router;

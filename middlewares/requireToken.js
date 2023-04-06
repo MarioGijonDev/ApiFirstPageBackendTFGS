@@ -8,14 +8,13 @@ export const requireToken = (req, res, next)=>{
 
   try{
 
-    // Get bearer token of request header
+    // Get token 
     const bearerToken = req.headers?.authorization;
 
-    // Get the part of the toeken (EG. bearer sdklfjjdsfasfs.asdas)
-    const token = bearerToken.split(' ')[1];
-
     // Throw error if there is not token
-    if(!token) throw new Error('Token must be in bearer formar')
+    if(!bearerToken) throw new Error('Token must be in bearer format')
+
+    const token = bearerToken.split(' ')[1];
 
     // Get payload of the token, in this case, id of user
     const { uid } = jwt.verify(token, process.env.JWT_SECRET)

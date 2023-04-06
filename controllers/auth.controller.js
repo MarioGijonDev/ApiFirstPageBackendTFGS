@@ -2,10 +2,8 @@
 // IMPORTS
 // Import user model
 import { User } from '../models/User.js'
-// Import json web token
-import jwt from 'jsonwebtoken'
 // Import generateToken
-import { generateToken } from '../utils/generateToken.js';
+import { generateRefreshToken, generateToken } from '../utils/tokenManager.js';
 
 // Register for register auth
 export const register = async (req, res) => {
@@ -21,7 +19,8 @@ export const register = async (req, res) => {
     // Save user un database
     await user.save();
 
-    return res.json({action: 'Register', request: req.body}); 
+    // Send result
+    return res.json({action: 'Register', status: 'ok' }); 
 
   }catch(e){
 
@@ -57,11 +56,14 @@ export const login = async (req, res) => {
     if(!passwordResponse)
       return res.status(403).json({ error: 'Incorrect credentials' });
 
-    // Generate jwt
+    // Generate token jwt
     const { token, expiresIn } = generateToken(user.id);
 
+    // Generate refresh token jwt
+    generateRefreshToken(user.id, res)
+
     // Return message with action
-    return res.status(200).json({action: 'Login', request: req.body, jwt: { token, expiresIn }}); 
+    return res.status(200).json({action: 'Login', request: req.body});
 
   }catch(e){
 
@@ -90,4 +92,41 @@ export const infoUser = async (req, res) =>{
 
   }
 
+}
+
+export const refreshToken = (req, res) =>{
+
+  try {
+
+    // Generate refresh token
+    const { token, expiresIn } = generateToken(req.uid);
+
+    // Return token and expires data
+    return res.json({ token, expiresIn })
+
+  }catch(e){
+    
+    // Send error
+    return res.status(401).send({ error: e.message })
+
+  }
+
+}
+
+export const logout = (req, res)=>{
+  
+  try{
+    
+    // Remove client's refresh roken
+    res.clearCookie('refreshToken')
+
+    // Send result
+    res.json({ action: 'logout' })
+
+  }catch(e){
+
+    // Show error in console
+    console.log(e)
+
+  }
 }
