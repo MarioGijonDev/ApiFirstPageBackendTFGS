@@ -20,7 +20,19 @@ const PORT = process.env.PORT || 3000;
 // Setting express app
 const app = express();
 
+/* const whiteList = [process.env.ORIGIN2, process.env.ORIGIN3]
+
 // Enable cors
+app.use(cors({
+  origin: (origin, callback)=>{
+    console.log(origin)
+    if(whiteList.includes(origin))
+      return callback(null, origin)
+    
+    return callback(`Cors error, origin ${origin} is not authorize`)
+  }
+})) */
+
 app.use(cors())
 
 // Enable json

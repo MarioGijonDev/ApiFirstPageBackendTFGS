@@ -26,12 +26,6 @@ export const bodyRegisterValidator = [
   body('name', 'Invalid name')
     .trim() // remove sides spaces
     .isLength({min: 2}), // has at least 3 characters
-
-  // Check surname
-  body('surname', 'Invalid surname')
-    .trim() // remove sides spaces
-    .isLength({min: 2}), // has at least 3 characters
-
   // Check email
   body('email', 'Invalid email format')
     .trim() // remove sides spaces

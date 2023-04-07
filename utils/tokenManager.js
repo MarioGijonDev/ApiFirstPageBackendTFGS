@@ -48,7 +48,7 @@ export const generateRefreshToken = (uid, res)=>{
   }catch(e){
 
     // Show error in console
-    console.log(e)
+    return res.send(401).json({ error: 'Error generating refresh token' })
 
   }
 

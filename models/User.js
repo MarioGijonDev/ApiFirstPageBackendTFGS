@@ -17,13 +17,6 @@ const userSchema = new Schema({
     lowercase: true,
     index: { unqiue: true }
   },
-  surname: {
-    type: String,
-    required: true,
-    trim: true,
-    lowercase: true,
-    index: { unqiue: true }
-  },
   email:{
     type: String,
     required: true,

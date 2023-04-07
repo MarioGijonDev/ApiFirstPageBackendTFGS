@@ -9,18 +9,26 @@
 </head>
 <body>
   <h1>Protected root</h1>
-  <div id="app">
-    <h2>Email</h2>
-  </div>
   <button id="logout">Logout</button>
 
   <script>
     document.getElementById('logout').addEventListener('click', async e => {
-      console.log('LOGOUT')
-      const resToken = await fetch('/api/v1/auth/logout')
-      const data = await resToken.json()
-      console.log(data)
+      try {
+
+        
+        const resToken = await fetch('/api/v1/auth/logout')
+        const data = await resToken.json()
+        console.log('LOGOUT')
+        console.log(data)
+
+      } catch (e) {
+
+        console.log(e)
+        
+      }
+      
     })
+
     document.addEventListener('DOMContentLoaded', async e => {
       try{
 

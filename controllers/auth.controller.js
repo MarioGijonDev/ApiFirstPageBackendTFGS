@@ -9,12 +9,12 @@ import { generateRefreshToken, generateToken } from '../utils/tokenManager.js';
 export const register = async (req, res) => {
 
   // Get email and password from body
-  const { name, surname, email, password } = req.body;
+  const { name, email, password } = req.body;
 
   try{
 
     // Create user with model
-    const user = new User({name, surname, email, password});
+    const user = new User({name, email, password});
 
     // Save user un database
     await user.save();
@@ -80,10 +80,10 @@ export const infoUser = async (req, res) =>{
   try{
 
     // Find user by id, using lean for get simplicity data
-    const {name, surname, email} = await User.findById(req.uid).lean();
+    const {name, email} = await User.findById(req.uid).lean();
 
     // Return the data in a json
-    return res.json({ name, surname, email })
+    return res.json({ name, email })
 
   }catch(e){
 

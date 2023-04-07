@@ -8,7 +8,7 @@ export const requireToken = (req, res, next)=>{
 
   try{
 
-    // Get token 
+    // Get tokenlogin.html 
     const bearerToken = req.headers?.authorization;
 
     // Throw error if there is not token
