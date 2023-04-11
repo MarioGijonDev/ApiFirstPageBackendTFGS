@@ -7,8 +7,8 @@ import jwt from 'jsonwebtoken'
 export const requireToken = (req, res, next)=>{
 
   try{
-
-    // Get tokenlogin.html 
+    
+    
     const bearerToken = req.headers?.authorization;
 
     // Throw error if there is not token
@@ -28,7 +28,7 @@ export const requireToken = (req, res, next)=>{
   }catch(e){
 
     // Return a json with all the errors
-    return res.status(401).json( { error: e.message })
+    return res.status(401).json({ status: 'bad', error: e.message })
     
   }
 

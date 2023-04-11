@@ -31,7 +31,7 @@ export const generateToken = (uid)=>{
 export const generateRefreshToken = (uid, res)=>{
 
   // 1 day
-  const expiresIn = 60^ 60 * 24 * 30
+  const expiresIn = 1000*60*60*24*30
 
   try{
 
@@ -40,15 +40,14 @@ export const generateRefreshToken = (uid, res)=>{
 
     // Send cookie
     res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
       secure: !(process.env.MODO === 'developer'),
-      expires: new Date(Date.now() + expiresIn * 1000)
+      expires: new Date(Date.now() + expiresIn)
     });
 
   }catch(e){
 
     // Show error in console
-    return res.send(401).json({ error: 'Error generating refresh token' })
+    return res.status(401).json({ error: 'Error generating refresh token' })
 
   }
 

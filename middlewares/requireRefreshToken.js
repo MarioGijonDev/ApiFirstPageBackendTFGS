@@ -19,6 +19,8 @@ export const requireRefreshToken = (req, res, next)=> {
 
   }catch(e){
 
+    return res.status(401).json({ error: e.message })
+
   }
 
 }

@@ -20,16 +20,16 @@ export const register = async (req, res) => {
     await user.save();
 
     // Send result
-    return res.json({action: 'Register', status: 'ok' }); 
+    return res.json({status: 'ok', action: 'register' }); 
 
   }catch(e){
 
     // If error is equal to 1100, it means the email already exists
     if(e.code === 11000)
-      return res.status(400).json({ error: 'Email already exists' })
+      return res.status(400).json({ status: 'bad', error: 'Email already exists' })
 
     // Return server error
-    return res.status(500).json({ error: 'Something went wrong in server' })
+    return res.status(500).json({ status: 'bad', error: 'Something went wrong in server' })
 
   }
 };
@@ -40,21 +40,26 @@ export const login = async (req, res) => {
   // Get email and password of request
   const { email, password } = req.body;
 
+  console.log(email, password)
+
   try{
 
     // Chek if user exists
     let user = await User.findOne({ email });
 
+    console.log(email)
+    console.log(!user ? 'No existe' : 'Existe')
+
     // If not existes, reply a json with the message
     if(!user)
-      return res.status(403).json({ error: 'User does not exists' });
+      return res.status(403).json({ status: 'bad', error: 'User does not exists' });
 
     // Check if password matches with database
     const passwordResponse = await user.comparePassword(password);
 
     // If passwords dont matches, reply a json with message
     if(!passwordResponse)
-      return res.status(403).json({ error: 'Incorrect credentials' });
+      return res.status(403).json({ status: 'bad', error: 'Incorrect credentials' });
 
     // Generate token jwt
     const { token, expiresIn } = generateToken(user.id);
@@ -63,17 +68,16 @@ export const login = async (req, res) => {
     generateRefreshToken(user.id, res)
 
     // Return message with action
-    return res.status(200).json({action: 'Login', request: req.body});
+      return res.json({ status: 'ok', action: 'login' }); 
 
   }catch(e){
 
     // Return server error
-    return res.status(500).json({ error: 'Something went wrong in server' })
+    return res.status(500).json({ status: 'bad', error: 'Something went wrong in server' })
 
   }
 }
-
-// Function that find the user by id
+ 
 // Return json with name, surname and email of the user
 export const infoUser = async (req, res) =>{ 
 
@@ -83,12 +87,12 @@ export const infoUser = async (req, res) =>{
     const {name, email} = await User.findById(req.uid).lean();
 
     // Return the data in a json
-    return res.json({ name, email })
+    return res.json({status: 'ok', name, email })
 
   }catch(e){
 
     // Return error
-    console.log(e)
+    return res.status(401).json({ status: 'bad', error: e.message })
 
   }
 
@@ -102,12 +106,12 @@ export const refreshToken = (req, res) =>{
     const { token, expiresIn } = generateToken(req.uid);
 
     // Return token and expires data
-    return res.json({ token, expiresIn })
+    return res.json({ action: 'refreshToken', token, expiresIn })
 
   }catch(e){
     
     // Send error
-    return res.status(401).send({ error: e.message })
+    return res.status(401).send({ status: 'bad', error: e.message })
 
   }
 
@@ -121,12 +125,40 @@ export const logout = (req, res)=>{
     res.clearCookie('refreshToken')
 
     // Send result
-    res.json({ action: 'logout' })
+    res.json({ status: 'ok', action: 'logout' })
 
   }catch(e){
 
     // Show error in console
-    console.log(e)
+    res.status(400).json({ status: 'bad', error: 'Something went wrong at loggin out, check you are login and refresh page'})
+
+  }
+}
+
+export const removeUser = async (req, res)=>{
+  
+  try{
+
+    const result = await User.findByIdAndRemove(req.uid)
+
+    const userDeleted = await User.findById(req.uid).lean();
+
+    if(userDeleted)
+      throw new Error('No user removed');
+
+    console.log(result)
+
+    console.log(req.uid)
+
+
+
+    // Send result
+    res.json({ status: 'ok', action: 'remove' })
+
+  }catch(e){
+
+    // Show error in console
+    res.status(400).json({ status: 'bad', error: 'Something went wrong at loggin out, check you are login and refresh page'})
 
   }
 }

@@ -3,7 +3,7 @@
 // Import express
 import { Router } from 'express';
 // Import auth controllers (logic behind auth)
-import { login, register, infoUser , refreshToken, logout} from '../controllers/auth.controller.js';
+import { login, register, infoUser , refreshToken, logout, removeUser} from '../controllers/auth.controller.js';
 // Import middleware requireToken
 import { requireToken } from '../middlewares/requireToken.js';
 // Import middleware requireRefreshToken
@@ -27,6 +27,8 @@ router.get('/protected', requireToken, infoUser)
 router.get('/refresh', requireRefreshToken, refreshToken)
 
 router.get('/logout', logout)
+
+router.get('/remove', requireToken, removeUser)
 
 // Exporting router
 export default router;

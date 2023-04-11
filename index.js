@@ -20,20 +20,26 @@ const PORT = process.env.PORT || 3000;
 // Setting express app
 const app = express();
 
-/* const whiteList = [process.env.ORIGIN2, process.env.ORIGIN3]
+const whiteList = [process.env.ORIGIN1]
 
-// Enable cors
 app.use(cors({
-  origin: (origin, callback)=>{
-    console.log(origin)
-    if(whiteList.includes(origin))
+  origin: function (origin, callback) {
+    console.log('origin => ' + origin);
+    if( (!origin || whiteList.includes(origin))){
       return callback(null, origin)
-    
-    return callback(`Cors error, origin ${origin} is not authorize`)
-  }
-})) */
+    }
+    return callback("Error de CORS origin: " + origin + " No autorizado")
+  },
+  credentials: true
+}))
 
-app.use(cors())
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
+  next();
+});
 
 // Enable json
 app.use(express.json());
