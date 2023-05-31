@@ -26,8 +26,10 @@ router.get('/protected', requireToken, infoUser)
 // Route for generate refresh token
 router.get('/refresh', requireRefreshToken, refreshToken)
 
+// Route for logout
 router.get('/logout', logout)
 
+// Route for remove user account
 router.get('/remove', requireToken, removeUser)
 
 // Exporting router

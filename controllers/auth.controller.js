@@ -82,7 +82,7 @@ export const login = async (req, res) => {
 export const infoUser = async (req, res) =>{ 
 
   try{
-
+    
     // Find user by id, using lean for get simplicity data
     const {name, email} = await User.findById(req.uid).lean();
 
@@ -102,7 +102,7 @@ export const refreshToken = (req, res) =>{
 
   try {
 
-    // Generate refresh token
+    // Generate token
     const { token, expiresIn } = generateToken(req.uid);
 
     // Return token and expires data
@@ -118,9 +118,9 @@ export const refreshToken = (req, res) =>{
 }
 
 export const logout = (req, res)=>{
-  
+
   try{
-    
+
     // Remove client's refresh roken
     res.clearCookie('refreshToken')
 
@@ -129,35 +129,33 @@ export const logout = (req, res)=>{
 
   }catch(e){
 
-    // Show error in console
+    // Send status and error
     res.status(400).json({ status: 'bad', error: 'Something went wrong at loggin out, check you are login and refresh page'})
 
   }
+
 }
 
 export const removeUser = async (req, res)=>{
   
   try{
 
+    // Find user in databse by id and remove it
     const result = await User.findByIdAndRemove(req.uid)
 
+    // Check user not exist
     const userDeleted = await User.findById(req.uid).lean();
 
+    // If exist, means the user wasn't removed so throw error
     if(userDeleted)
       throw new Error('No user removed');
 
-    console.log(result)
-
-    console.log(req.uid)
-
-
-
-    // Send result
+    // Send success message
     res.json({ status: 'ok', action: 'remove' })
 
   }catch(e){
 
-    // Show error in console
+    // Show error
     res.status(400).json({ status: 'bad', error: 'Something went wrong at loggin out, check you are login and refresh page'})
 
   }

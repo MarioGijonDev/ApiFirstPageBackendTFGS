@@ -5,6 +5,7 @@ import { validationResultExpress } from './validationResultExpress.js'
 // Import body of express validator
 import { body } from 'express-validator';
 
+// Middleware for login validation
 export const bodyLoginValidator = [
 
   // Check email
@@ -20,6 +21,7 @@ export const bodyLoginValidator = [
 
 ]
 
+// Middleware for register validation
 export const bodyRegisterValidator = [
 
   // Check name
