@@ -1,36 +1,42 @@
 
 // IMPORTS
-// Import express
 import { Router } from 'express';
-// Import auth controllers (logic behind auth)
 import { login, register, infoUser , refreshToken, logout, removeUser} from '../controllers/auth.controller.js';
-// Import middleware requireToken
-import { requireToken } from '../middlewares/requireToken.js';
-// Import middleware requireRefreshToken
-import { requireRefreshToken } from '../middlewares/requireRefreshToken.js';
-// Import validator middlewares
+import { requireAccessToken, requireRefreshToken } from '../middlewares/requireToken.js';
 import { bodyLoginValidator, bodyRegisterValidator } from '../middlewares/validatorManager.js';
 
-// Create reouter
+// Creamos una instancia router para manejar las solicitudes al servidor
 const router = Router();
 
-// Setting router for login
-router.post('/login', bodyLoginValidator, login);
+// Definimos las rutas, y los middlewares que se ejecutarán secuencialmente por cada ruta
 
-// Settings router for register
+// Ruta para registrarse
+// 1º bodyRegisterValidator -> Valdidar los campos de registro
+// 2º register -> Contendrá la lógica para registrarse
 router.post('/register', bodyRegisterValidator, register)
 
-// Route for check protection with jwt
-router.get('/protected', requireToken, infoUser)
+// Ruta para iniciar sesión
+// 1º bodyLoginValidator -> Validar los campos de inicio de sesión
+// 2º register -> Contendrá la lógica para iniciar sesión
+router.post('/login', bodyLoginValidator, login);
 
-// Route for generate refresh token
+// Ruta para refrescar el JWT de acceso
+// 1º requireRefreshToken -> Comprueba el Refresh JWT
+// 2º refreshToken -> Refresca el JWT de acceso
 router.get('/refresh', requireRefreshToken, refreshToken)
 
-// Route for logout
+// Ruta para proteger la página comprobando el JWT
+// 1º requireAccessToken -> Comprueba el JWT de acceso
+// 2º infoUser -> Devuelve la información del usuario (nombre y correo)
+router.get('/protected', requireAccessToken, infoUser)
+
+// Ruta para cerrar sesión
+// 1º logout -> Contendrá la lógica para cerrar de sesión
 router.get('/logout', logout)
 
-// Route for remove user account
-router.get('/remove', requireToken, removeUser)
+// Ruta para eliminar usuario
+// 1º remove -> Contendrá la lógica para eliminar el usuario
+router.get('/remove', requireAccessToken, removeUser)
 
-// Exporting router
+// Exportamos el router
 export default router;

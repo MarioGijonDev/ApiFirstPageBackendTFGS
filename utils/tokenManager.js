@@ -41,7 +41,8 @@ export const generateRefreshToken = (uid, res)=>{
     // Send cookie
     res.cookie('refreshToken', refreshToken, {
       secure: !(process.env.MODO === 'developer'),
-      expires: new Date(Date.now() + expiresIn)
+      expires: new Date(Date.now() + expiresIn),
+      httpOnly: true
     });
 
   }catch(e){

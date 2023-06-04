@@ -1,162 +1,114 @@
 
 // IMPORTS
-// Import user model
 import { User } from '../models/User.js'
-// Import generateToken
 import { generateRefreshToken, generateToken } from '../utils/tokenManager.js';
 
-// Register for register auth
+// Registrarse
 export const register = async (req, res) => {
-
-  // Get email and password from body
+  // Recogemos los dados enviados por el body de la solicitud
+  // Estos datos son el nombre, email y contraseña
   const { name, email, password } = req.body;
-
   try{
-
-    // Create user with model
+    // Creamos un usuario con el modelo que tenemos en MongoDB
     const user = new User({name, email, password});
-
-    // Save user un database
+    // Guardamos el usuario en nuestra base de datos
     await user.save();
-
-    // Send result
+    // Enviamos el json con el resultado exitoso de registro
     return res.json({status: 'ok', action: 'register' }); 
-
   }catch(e){
-
     // If error is equal to 1100, it means the email already exists
+    // Si el error es 11000, implica que el email ya existe
     if(e.code === 11000)
       return res.status(400).json({ status: 'bad', error: 'Email already exists' })
-
-    // Return server error
+    // Devolvemos un error por defecto en caso de que haya un error en el servidor
     return res.status(500).json({ status: 'bad', error: 'Something went wrong in server' })
-
   }
 };
 
-// Logic for login auth
+// Iniciar sesión
 export const login = async (req, res) => {
-
-  // Get email and password of request
+  // Obtenemos los datos necesarios del body de la solicitud
   const { email, password } = req.body;
-
-  console.log(email, password)
-
   try{
-
-    // Chek if user exists
+    // Comprobamos que el usuario existe
     let user = await User.findOne({ email });
-
-    console.log(email)
-    console.log(!user ? 'No existe' : 'Existe')
-
     // If not existes, reply a json with the message
+    // En caso de que no existe, devolvemos un json con la información del error
     if(!user)
-      return res.status(403).json({ status: 'bad', error: 'User does not exists' });
-
-    // Check if password matches with database
+      return res.status(403).json({ status: 'bad', error: 'User does not exists' })
+    // Comprobamos que la contraseña coincide con la registrada en la base de datos
     const passwordResponse = await user.comparePassword(password);
-
-    // If passwords dont matches, reply a json with message
+    // Si las contraseñas no coinciden, enviamos un json con la información del error
     if(!passwordResponse)
-      return res.status(403).json({ status: 'bad', error: 'Incorrect credentials' });
-
-    // Generate token jwt
-    const { token, expiresIn } = generateToken(user.id);
-
-    // Generate refresh token jwt
+      return res.status(403).json({ status: 'bad', error: 'Incorrect credentials' })
+    // Creamos un JWT de acceso
+    const { token, expiresIn } = generateToken(user.id)
+    // Creamos un RefreshJWT que se enviará al usuario mediante una cookie 
     generateRefreshToken(user.id, res)
-
-    // Return message with action
-      return res.json({ status: 'ok', action: 'login' }); 
+    // Devolvemos un json con el resultado exitoso de la operación
+    return res.json({ status: 'ok', action: 'login' })
 
   }catch(e){
-
-    // Return server error
+    // Devolvemos el error en caso de error de servidor
     return res.status(500).json({ status: 'bad', error: 'Something went wrong in server' })
 
   }
 }
  
-// Return json with name, surname and email of the user
+// Obtener y enviar información del usuario
 export const infoUser = async (req, res) =>{ 
-
   try{
-    
-    // Find user by id, using lean for get simplicity data
+    // Buscamos el usuario por id, usando lean() para obtener los datos simplificados
     const {name, email} = await User.findById(req.uid).lean();
-
-    // Return the data in a json
+    // Devolvemos la información mediante un json
     return res.json({status: 'ok', name, email })
-
   }catch(e){
-
-    // Return error
+    // En caso de error, devolvemos el mensaje asociado a este
     return res.status(401).json({ status: 'bad', error: e.message })
 
   }
-
 }
 
+// Refrescar el JWT de acceso
 export const refreshToken = (req, res) =>{
-
   try {
-
-    // Generate token
+    // Creamos un nuevo Token de acceso
     const { token, expiresIn } = generateToken(req.uid);
-
-    // Return token and expires data
+    // Devolvemos el token con la fecha de expiración
     return res.json({ action: 'refreshToken', token, expiresIn })
-
   }catch(e){
-    
-    // Send error
+    // En caso de error, devolvemos el mensaje asociado a este
     return res.status(401).send({ status: 'bad', error: e.message })
-
   }
-
 }
 
+// Cerrar sesión
 export const logout = (req, res)=>{
-
   try{
-
-    // Remove client's refresh roken
+    // ELiminamos la cookie refreshToken del navegador del cliente
     res.clearCookie('refreshToken')
-
-    // Send result
+    // Enviamos confirmación de cierre de sesión
     res.json({ status: 'ok', action: 'logout' })
-
   }catch(e){
-
-    // Send status and error
+    // En caso de error, devolvemos un mensaje informando al cliente de este error
     res.status(400).json({ status: 'bad', error: 'Something went wrong at loggin out, check you are login and refresh page'})
-
   }
-
 }
 
+// Eliminar usuario
 export const removeUser = async (req, res)=>{
-  
   try{
-
-    // Find user in databse by id and remove it
+    // Buscamos el usuario en la base de datos por su id y lo borramos
     const result = await User.findByIdAndRemove(req.uid)
-
-    // Check user not exist
+    // Comprobamos que el usuario definitivamente ha sido borrado
     const userDeleted = await User.findById(req.uid).lean();
-
-    // If exist, means the user wasn't removed so throw error
+    // En caso de que el usuario no se haya borrado, lanzamos un error
     if(userDeleted)
       throw new Error('No user removed');
-
-    // Send success message
+    // En caso contrario, enviamos el mensaje de confirmación de usuario eliminado
     res.json({ status: 'ok', action: 'remove' })
-
   }catch(e){
-
-    // Show error
+    // En caso de error, devolvemos un mensaje informadno de que no se ha eliminado el usuario
     res.status(400).json({ status: 'bad', error: 'Something went wrong at loggin out, check you are login and refresh page'})
-
   }
 }

@@ -1,20 +1,17 @@
 
 // IMPORTS
-// Import validation result
 import { validationResult } from "express-validator";
 
-// Check validations errors
+// Comprueba errores según las especificaciones dadas (esas especificaciones quedan guardadas en validationResult)
 export const validationResultExpress = ((req, res, next) =>{
-
-  // Get errors
+  // Ejecutamos la validación, enviando los campos de la solicitud
   const errors = validationResult(req);
-
-  // Check if errors is not empty (it means there is at least one error)
+  // Comprobamos que no haya errores (errors esté vacío)
   if(!errors.isEmpty())
+    // Si hay errores, enviamos la respuesta con status 400 y los errores en formato json
+    // status 400: Error en la sintaxis de la solicitud
     return res.status(400).json({ errors: errors.array() });  
-  
-  // If there is no errors, go to next method
+  // Continuamos con el siguiente middleware
   next();
-  
 })
 
