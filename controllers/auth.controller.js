@@ -1,7 +1,7 @@
 
 // IMPORTS
 import { User } from '../models/User.js'
-import { generateRefreshToken, generateToken } from '../utils/tokenManager.js';
+import { generateRefreshToken, generateAccessToken } from '../utils/tokenManager.js';
 
 // Registrarse
 export const register = async (req, res) => {
@@ -16,7 +16,6 @@ export const register = async (req, res) => {
     // Enviamos el json con el resultado exitoso de registro
     return res.json({status: 'ok', action: 'register' }); 
   }catch(e){
-    // If error is equal to 1100, it means the email already exists
     // Si el error es 11000, implica que el email ya existe
     if(e.code === 11000)
       return res.status(400).json({ status: 'bad', error: 'Email already exists' })
@@ -32,7 +31,6 @@ export const login = async (req, res) => {
   try{
     // Comprobamos que el usuario existe
     let user = await User.findOne({ email });
-    // If not existes, reply a json with the message
     // En caso de que no existe, devolvemos un json con la información del error
     if(!user)
       return res.status(403).json({ status: 'bad', error: 'User does not exists' })
@@ -42,7 +40,7 @@ export const login = async (req, res) => {
     if(!passwordResponse)
       return res.status(403).json({ status: 'bad', error: 'Incorrect credentials' })
     // Creamos un JWT de acceso
-    const { token, expiresIn } = generateToken(user.id)
+    const { token, expiresIn } = generateAccessToken(user.id)
     // Creamos un RefreshJWT que se enviará al usuario mediante una cookie 
     generateRefreshToken(user.id, res)
     // Devolvemos un json con el resultado exitoso de la operación
@@ -73,7 +71,7 @@ export const infoUser = async (req, res) =>{
 export const refreshToken = (req, res) =>{
   try {
     // Creamos un nuevo Token de acceso
-    const { token, expiresIn } = generateToken(req.uid);
+    const { token, expiresIn } = generateAccessToken(req.uid);
     // Devolvemos el token con la fecha de expiración
     return res.json({ action: 'refreshToken', token, expiresIn })
   }catch(e){
@@ -112,3 +110,4 @@ export const removeUser = async (req, res)=>{
     res.status(400).json({ status: 'bad', error: 'Something went wrong at loggin out, check you are login and refresh page'})
   }
 }
+

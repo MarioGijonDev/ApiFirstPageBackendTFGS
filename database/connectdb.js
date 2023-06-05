@@ -11,3 +11,5 @@ try{
   // En caso de error, lo mostramos en la terminal
   console.log(`Connection error to MongoDB: ${e.message}`)
 }  
+
+

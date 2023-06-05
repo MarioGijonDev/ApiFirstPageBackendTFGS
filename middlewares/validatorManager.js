@@ -32,3 +32,4 @@ export const bodyRegisterValidator = [
   // Este middleware se encarga de mostrar o validar finalmente según los requerimientos definidos
   validationResultExpress
 ]
+

@@ -1,55 +1,40 @@
 
 // IMPORTS
-// Import jwt
 import jwt from 'jsonwebtoken'
 
-// Function that generate jwt
-// It gets id of user like a parameter
-export const generateToken = (uid)=>{
-
-  // 15min
-  const expiresIn = 60*15;
-
-  try{
-
-    // Create token, with uid, expires in 15 min
-    const token = jwt.sign({uid}, process.env.JWT_SECRET, { expiresIn })
-
-    // Return the token and the expired time
-    return { token, expiresIn }
-
-  }catch(e){
-
-    // Show error
-    console.log(e)
-
+// Función para generar el JWT de acceso
+// Recibe el id del usuario como parámetro
+export const generateAccessToken = (uid) => {
+  // Asignaremos 15 minutos de duración del token
+  const expiresIn = 60 * 15;
+  try {
+    // Creamos el JWT de acceso con el uid como carga útil
+    const token = jwt.sign({ uid }, process.env.JWT_SECRET, { expiresIn });
+    // Devolvemos el token y el tiempo de expiración
+    return { token, expiresIn };
+  } catch (e) {
+    // En caso de error, lo mostramos en la terminal
+    console.log(e);
   }
-
 }
-
-// Function for generate token
-export const generateRefreshToken = (uid, res)=>{
-
-  // 1 day
-  const expiresIn = 1000*60*60*24*30
-
-  try{
-
-    // Create token with uid as payload
-    const refreshToken = jwt.sign({uid}, process.env.JWT_REFRESH, {expiresIn});
-
-    // Send cookie
+// Función para generar el Refresh JWT
+// Recibe el id del usuario y la respuesta como parámetro
+export const generateRefreshToken = (uid, res) => {
+  // Asignaremos 30 días de duración del token de refresco
+  const expiresIn = 1000 * 60 * 60 * 24 * 30;
+  try {
+    // Creamos el Refresh JWT con el uid como carga útil
+    const refreshToken = jwt.sign({ uid }, process.env.JWT_REFRESH, { expiresIn });
+    // Añadimos el Refresh JWT a la respuesta en forma de cookie
     res.cookie('refreshToken', refreshToken, {
-      secure: !(process.env.MODO === 'developer'),
+      secure: !(process.env.MODO === 'developer'), // Para enviar como http o https
       expires: new Date(Date.now() + expiresIn),
-      httpOnly: true
+      httpOnly: true // Para enviarlo como HTTPOnly
     });
-
-  }catch(e){
-
-    // Show error in console
-    return res.status(401).json({ error: 'Error generating refresh token' })
-
+  } catch (e) {
+    // En caso de error, lo devolvemos en la respuesta en formato json
+    return res.status(401).json({ error: 'Error al generar el token de refresco' });
   }
-
 }
+
+

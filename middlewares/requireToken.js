@@ -44,3 +44,4 @@ export const requireAccessToken = (req, res, next) => {
     return res.status(401).json({ status: 'bad', error: e.message });
   }
 }
+
