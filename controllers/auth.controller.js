@@ -1,6 +1,6 @@
 
 // IMPORTS
-import { User } from '../models/User.js'
+import { User } from '../model/User.js'
 import { generateRefreshToken, generateAccessToken } from '../utils/tokenManager.js';
 
 // Registrarse
