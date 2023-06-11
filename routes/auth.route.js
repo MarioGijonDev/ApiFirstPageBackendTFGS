@@ -35,7 +35,8 @@ router.get('/protected', requireAccessToken, infoUser)
 router.get('/logout', logout)
 
 // Ruta para eliminar usuario
-// 1º remove -> Contendrá la lógica para eliminar el usuario
+// 1º requireAccessToken -> Comprueba el JWT de acceso
+// 2º removeUser -> Elimina el usuario de la base de datos
 router.get('/remove', requireAccessToken, removeUser)
 
 // Exportamos el router

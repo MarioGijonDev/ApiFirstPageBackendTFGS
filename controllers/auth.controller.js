@@ -86,7 +86,9 @@ export const logout = (req, res)=>{
     res.json({ status: 'ok', action: 'logout' })
   }catch(e){
     // En caso de error, devolvemos un mensaje informando al cliente de este error
-    res.status(400).json({ status: 'bad', error: 'Something went wrong at loggin out, check you are login and refresh page'})
+    res.status(400).json({
+      status: 'bad',
+      error: 'Something went wrong at loggin out, check you are login and refresh page'})
   }
 }
 
@@ -104,7 +106,9 @@ export const removeUser = async (req, res)=>{
     res.json({ status: 'ok', action: 'remove' })
   }catch(e){
     // En caso de error, devolvemos un mensaje informadno de que no se ha eliminado el usuario
-    res.status(400).json({ status: 'bad', error: 'Something went wrong at loggin out, check you are login and refresh page'})
+    res.status(400).json({
+      status: 'bad',
+      error: e})
   }
 }
 
