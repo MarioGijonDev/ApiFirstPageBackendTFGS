@@ -39,13 +39,10 @@ export const login = async (req, res) => {
     // Si las contraseñas no coinciden, enviamos un json con la información del error
     if(!passwordResponse)
       return res.status(403).json({ status: 'bad', error: 'Incorrect credentials' })
-    // Creamos un JWT de acceso
-    const { token, expiresIn } = generateAccessToken(user.id)
     // Creamos un RefreshJWT que se enviará al usuario mediante una cookie 
     generateRefreshToken(user.id, res)
     // Devolvemos un json con el resultado exitoso de la operación
     return res.json({ status: 'ok', action: 'login' })
-
   }catch(e){
     // Devolvemos el error en caso de error de servidor
     return res.status(500).json({ status: 'bad', error: 'Something went wrong in server' })

@@ -3,10 +3,10 @@
 import mongoose from 'mongoose';
 import bcryptjs from 'bcryptjs'
 
-// Get schema and model of mongoose
 const { Schema, model } = mongoose;
 
-// Create use schema (fields of user)
+// Creamos el esquema del usuario
+// Contiene los campos de cada usuario
 const userSchema = new Schema({
   name: {
     type: String, // Cadena de texto
@@ -51,7 +51,6 @@ userSchema.pre("save", async function(next){
   }
 });
 
-// Create method for user schema that compare if the 2 password is the same
 // Esta función pertenecerá al schema (instancia del módulo/usuario)
 // Usamos una función "Mandatory" en vez de una función flecha para hacer uso del this
 // Compara dos contraseñas para comprobar que la contraseña asociada al usuario es correcta
@@ -59,7 +58,8 @@ userSchema.methods.comparePassword = async function(candidatePassword) {
   // Devuelve true si son iguales, false si no lo son
   return await bcryptjs.compare(candidatePassword, this.password);
 }
-
 // Creamos un modelo, que funcionará como una tabla en una base de datos relacional
 // Cada instancia del modelo, debe tener la estructura especificada en el schema
 export const User = model('User', userSchema);
+
+
