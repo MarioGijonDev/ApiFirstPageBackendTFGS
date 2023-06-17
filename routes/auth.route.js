@@ -17,7 +17,7 @@ router.post('/register', bodyRegisterValidator, register)
 
 // Ruta para iniciar sesión
 // 1º bodyLoginValidator -> Validar los campos de inicio de sesión
-// 2º register -> Contendrá la lógica para iniciar sesión
+// 2º login -> Contendrá la lógica para iniciar sesión
 router.post('/login', bodyLoginValidator, login);
 
 // Ruta para refrescar el JWT de acceso
